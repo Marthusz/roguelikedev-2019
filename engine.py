@@ -3,11 +3,19 @@ import tcod.event as event
 
 from entity import Entity
 from input_handlers import handle_keys
+from map_objects.game_map import GameMap
 from render_functions import clear_all, render_all
 
 def main():
     screen_width = 80
     screen_height = 50
+    map_width = 80
+    map_height = 45
+
+    colors = {
+        'dark_wall': libtcod.Color(0, 0, 100),
+        'dark_ground': libtcod.Color(50, 50, 150)
+    }
 
     player = Entity(int(screen_width/2), int(screen_height/2), '@', libtcod.white)
     entities = [player]
@@ -15,7 +23,9 @@ def main():
     libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
 
     root_console = libtcod.console_init_root(screen_width, screen_height, 'libtcod tutorial revised', False, renderer=libtcod.RENDERER_OPENGL2, vsync=True)
-    con = libtcod.console_new(screen_width, screen_height)
+    con = libtcod.console.Console(screen_width, screen_height)
+
+    game_map = GameMap(map_width, map_height)
 
     key = libtcod.Key()
     mouse = libtcod.Mouse()
@@ -23,7 +33,7 @@ def main():
     while True:
         events = event.get()
 
-        render_all(con, entities, screen_width, screen_height)
+        render_all(con, entities, game_map, screen_width, screen_height, colors)
         libtcod.console_flush()
 
         clear_all(con, entities)
@@ -40,7 +50,9 @@ def main():
 
                 if move:
                     dx, dy = move
-                    player.move(dx, dy)
+
+                    if not game_map.is_blocked(player.x + dx, player.y + dy):
+                        player.move(dx, dy)
 
                 if exit:
                     raise SystemExit()

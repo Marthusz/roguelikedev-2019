@@ -1,5 +1,5 @@
 class Entity:
-    def __init__(self, x, t, char, color):
+    def __init__(self, x, y, char, color):
         self.x = x
         self.y = y
         self.char = char

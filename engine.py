@@ -6,6 +6,9 @@ from input_handlers import handle_keys
 from map_objects.game_map import GameMap
 from render_functions import clear_all, render_all
 
+import warnings
+warnings.filterwarnings("default", category=DeprecationWarning)
+
 def main():
     screen_width = 80
     screen_height = 50

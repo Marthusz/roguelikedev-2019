@@ -6,9 +6,9 @@ def render_all(src_con, dst_con, entities, game_map, screen_width, screen_height
             wall = game_map.tiles[x][y].block_sight
 
             if wall:
-                libtcod.console_set_char_background(src_con, x, y, colors.get('dark_wall'), libtcod.BKGND_SET)
+                src_con.tiles['bg'][x, y, :3] = colors.get('dark_wall')
             else:
-                libtcod.console_set_char_background(src_con, x, y, colors.get('dark_ground'), libtcod.BKGND_SET)
+                src_con.tiles['bg'][x, y, :3] = colors.get('dark_ground')
 
     for entity in entities:
         draw_entity(src_con, entity)
@@ -20,8 +20,9 @@ def clear_all(con, entities):
         clear_entity(con, entity)
 
 def draw_entity(con, entity):
-    con.default_fg = entity.color
-    libtcod.console_put_char(con, entity.x, entity.y, entity.char, libtcod.BKGND_NONE)
+    con.tiles['fg'][entity.x, entity.y, :3] = entity.color
+    # Index this array with console.ch[i, j]  # order='C' or console.ch[x, y]  # order='F'.
+    con.tiles['ch'][entity.x, entity.y] = ord(entity.char)
 
 def clear_entity(con, entity):
-    libtcod.console_put_char(con, entity.x, entity.y, ' ', libtcod.BKGND_NONE)
+    con.tiles['ch'][entity.x, entity.y] = ord(' ')

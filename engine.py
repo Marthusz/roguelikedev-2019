@@ -36,7 +36,7 @@ def main():
     game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player)
 
     while True:
-        render_all(con, entities, game_map, screen_width, screen_height, colors)
+        render_all(con, root_console, entities, game_map, screen_width, screen_height, colors)
         libtcod.console_flush()
 
         clear_all(con, entities)

@@ -47,8 +47,8 @@ class GameMap:
                         self.create_v_tunnel(prev_y, new_y, prev_x)
                         self.create_h_tunnel(prev_x, new_x, new_y)
 
-            rooms.append(new_room)
-            num_rooms += 1
+                rooms.append(new_room)
+                num_rooms += 1
 
     def create_room(self, room):
         for x in range(room.x1+1, room.x2):

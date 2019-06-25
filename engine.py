@@ -32,18 +32,13 @@ def main():
     game_map = GameMap(map_width, map_height)
     game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player)
 
-    key = libtcod.Key()
-    mouse = libtcod.Mouse()
-
     while True:
-        events = event.get()
-
         render_all(con, entities, game_map, screen_width, screen_height, colors)
         libtcod.console_flush()
 
         clear_all(con, entities)
 
-        for ev in events:
+        for ev in event.get():
             if ev.type == 'QUIT':
                 raise SystemExit()
             elif ev.type == 'KEYDOWN':

@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, sample, shuffle
 
 from map_objects.rectangle import Rect
 from map_objects.tile import Tile
@@ -53,14 +53,6 @@ class GameMap:
                 if num_rooms == 0:
                     player.x = new_x
                     player.y = new_y
-                #else:
-                #    (prev_x, prev_y) = rooms[num_rooms-1].center()
-                #    if randint(0, 1) == 1:
-                #        self.create_h_tunnel(prev_x, new_x, prev_y)
-                #        self.create_v_tunnel(prev_y, new_y, new_x)
-                #    else:
-                #        self.create_v_tunnel(prev_y, new_y, prev_x)
-                #        self.create_h_tunnel(prev_x, new_x, new_y)
 
                 rooms.append(new_room)
                 num_rooms += 1
@@ -71,28 +63,42 @@ class GameMap:
         for y in range(1, map_height, 2):
             for x in range(1, map_width, 2):
                 if self.tiles[x][y].blocked:
-                    # List for growable cells
-                    cells = []
-
-                    # Calculate the possible grow directions
-                    directions = []
-
-                    for dir in grow_directions:
-                        movement = (x + dir[0], y + dir[1])
-                        # Checking if possible move is in bounds
-                        if movement[0] >= 1 and movement[0] < map_width and movement[1] >= 1 and movement[1] < map_height:
-                            directions.append(dir)
-
-                    print(directions)
-
                     self.tiles[x][y].blocked = False
                     self.tiles[x][y].block_sight = False
+                    print('Starting grow from ({0}, {1})'.format(x, y))
+
+                    # List for growable cells
+                    cells = []
+                    cells.append((x, y))
+
+                    while len(cells) > 0:
+                        shuffle(cells)
+                        # Get first cell
+                        cell = cells[0]
+
+                        # Calculate the possible grow directions
+                        directions = []
+
+                        #print('Cell located in ({0}, {1})'.format(cell[0], cell[1]))
+
+                        for dir in grow_directions:
+                            movement = (cell[0] + dir[0]*2, cell[1] + dir[1]*2)
+                            # Checking if possible move is in bounds
+                            if movement[0] >= 1 and movement[0] < map_width and movement[1] >= 1 and movement[1] < map_height:
+                                if self.tiles[cell[0] + dir[0]*2][cell[1] + dir[1]*2].block_sight:
+                                    directions.append(dir)
+
+                        if len(directions) != 0:
+                            choice = sample(directions, 1)[0]
+                            self.tiles[cell[0]+choice[0]][cell[1]+choice[1]].blocked = False
+                            self.tiles[cell[0]+choice[0]][cell[1]+choice[1]].block_sight = False
+                            self.tiles[cell[0]+choice[0]*2][cell[1]+choice[1]*2].blocked = False
+                            self.tiles[cell[0]+choice[0]*2][cell[1]+choice[1]*2].block_sight = False
+                            cells.append((cell[0]+choice[0]*2, cell[1]+choice[1]*2))
+                        else:
+                            cells = cells[1:len(cells)]
 
         print("Map finished!")
-
-
-
-
 
     def create_room(self, room):
         for x in range(room.x1+1, room.x2):

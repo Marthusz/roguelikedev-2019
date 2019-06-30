@@ -12,6 +12,8 @@ def handle_keys(ev):
         return {'move': (-1, 0)}
     elif ev.sym == event.K_RIGHT:
         return {'move': (1, 0)}
+    elif ev.sym == event.K_SPACE:
+        return {'map': True}
 
     if ev.sym == event.K_RETURN and ev.mod & event.KMOD_LALT:
         # Alt+Enter: toggle full screen

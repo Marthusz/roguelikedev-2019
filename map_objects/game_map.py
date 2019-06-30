@@ -15,6 +15,8 @@ class GameMap:
         return tiles
 
     def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, player):
+        self.tiles = self.initialize_tiles()
+
         rooms = []
         num_rooms = 0
 
@@ -114,7 +116,6 @@ class GameMap:
                     elif(r3 != r4 and r3 != -1 and r4 != -1):
                         connectors.append(((x, y), 1))
 
-        print(len(connectors))
         while len(connectors) != 0:
             shuffle(connectors)
             connection = connectors[0]
@@ -126,8 +127,6 @@ class GameMap:
 
             reg1 = self.tiles[connection[0][0]-move[0]][connection[0][1]-move[1]].region
             reg2 = self.tiles[connection[0][0]+move[0]][connection[0][1]+move[1]].region
-
-            print('reg1: {0}, reg2: {1}'.format(reg1, reg2))
 
             self.tiles[connection[0][0]][connection[0][1]].blocked = False
             self.tiles[connection[0][0]][connection[0][1]].block_sight = False
@@ -151,6 +150,7 @@ class GameMap:
                             connectors.append(((x, y), 0))
                         elif(r3 != r4 and r3 != -1 and r4 != -1):
                             connectors.append(((x, y), 1))
+
 
 
         print('Map finished!')

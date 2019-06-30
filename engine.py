@@ -51,6 +51,10 @@ def main():
                 move = action.get('move')
                 fullscreen = action.get('fullscreen')
                 exit = action.get('exit')
+                map = action.get('map')
+
+                if map:
+                    game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player)
 
                 if move:
                     dx, dy = move

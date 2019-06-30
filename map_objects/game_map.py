@@ -24,19 +24,19 @@ class GameMap:
             w = randint(room_min_size, room_max_size)
             h = randint(room_min_size, room_max_size)
 
-            if w%2 != 0:
+            if w%2 == 0:
                 w -= 1
 
-            if h%2 != 0:
+            if h%2 == 0:
                 h -= 1
 
             x = randint(1, map_width - w)
             y = randint(1, map_height - h)
 
-            if x%2 != 0:
+            if x%2 == 0:
                 x -= 1
 
-            if y%2 != 0:
+            if y%2 == 0:
                 y -= 1
 
             new_room = Rect(x, y, w, h)
@@ -46,7 +46,6 @@ class GameMap:
                     break
             else:
                 self.create_room(new_room)
-                print('New room: size({0}, {1}), position({2}, {3})'.format(w, h, x, y))
 
                 (new_x, new_y) = new_room.center()
 
@@ -79,10 +78,8 @@ class GameMap:
                         # Calculate the possible grow directions
                         directions = []
 
-                        #print('Cell located in ({0}, {1})'.format(cell[0], cell[1]))
-
                         for dir in grow_directions:
-                            movement = (cell[0] + dir[0]*2, cell[1] + dir[1]*2)
+                            movement = (cell[0] + dir[0]*3, cell[1] + dir[1]*3)
                             # Checking if possible move is in bounds
                             if movement[0] >= 1 and movement[0] < map_width and movement[1] >= 1 and movement[1] < map_height:
                                 if self.tiles[cell[0] + dir[0]*2][cell[1] + dir[1]*2].block_sight:
@@ -98,11 +95,13 @@ class GameMap:
                         else:
                             cells = cells[1:len(cells)]
 
+
         print("Map finished!")
+        print('Number of rooms: {0}'.format(len(rooms)))
 
     def create_room(self, room):
-        for x in range(room.x1+1, room.x2):
-            for y in range(room.y1+1, room.y2):
+        for x in range(room.x1, room.x2):
+            for y in range(room.y1, room.y2):
                 self.tiles[x][y].blocked = False
                 self.tiles[x][y].block_sight = False
 

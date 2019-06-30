@@ -15,7 +15,7 @@ def main():
     map_width = screen_width - 15
     map_height = screen_height - 15
 
-    room_max_size = 17
+    room_max_size = 13
     room_min_size = 5
     max_rooms = 100
 

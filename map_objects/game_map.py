@@ -18,11 +18,26 @@ class GameMap:
         rooms = []
         num_rooms = 0
 
+        print('Generating rooms...')
+
         for r in range(max_rooms):
             w = randint(room_min_size, room_max_size)
             h = randint(room_min_size, room_max_size)
-            x = randint(0, map_width - w - 1)
-            y = randint(0, map_height - h - 1)
+
+            if w%2 != 0:
+                w -= 1
+
+            if h%2 != 0:
+                h -= 1
+
+            x = randint(1, map_width - w)
+            y = randint(1, map_height - h)
+
+            if x%2 != 0:
+                x -= 1
+
+            if y%2 != 0:
+                y -= 1
 
             new_room = Rect(x, y, w, h)
 
@@ -31,24 +46,53 @@ class GameMap:
                     break
             else:
                 self.create_room(new_room)
+                print('New room: size({0}, {1}), position({2}, {3})'.format(w, h, x, y))
 
                 (new_x, new_y) = new_room.center()
 
                 if num_rooms == 0:
                     player.x = new_x
                     player.y = new_y
-                else:
-                    (prev_x, prev_y) = rooms[num_rooms-1].center()
-
-                    if randint(0, 1) == 1:
-                        self.create_h_tunnel(prev_x, new_x, prev_y)
-                        self.create_v_tunnel(prev_y, new_y, new_x)
-                    else:
-                        self.create_v_tunnel(prev_y, new_y, prev_x)
-                        self.create_h_tunnel(prev_x, new_x, new_y)
+                #else:
+                #    (prev_x, prev_y) = rooms[num_rooms-1].center()
+                #    if randint(0, 1) == 1:
+                #        self.create_h_tunnel(prev_x, new_x, prev_y)
+                #        self.create_v_tunnel(prev_y, new_y, new_x)
+                #    else:
+                #        self.create_v_tunnel(prev_y, new_y, prev_x)
+                #        self.create_h_tunnel(prev_x, new_x, new_y)
 
                 rooms.append(new_room)
                 num_rooms += 1
+
+        print("Generating corridors...")
+        grow_directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+
+        for y in range(1, map_height, 2):
+            for x in range(1, map_width, 2):
+                if self.tiles[x][y].blocked:
+                    # List for growable cells
+                    cells = []
+
+                    # Calculate the possible grow directions
+                    directions = []
+
+                    for dir in grow_directions:
+                        movement = (x + dir[0], y + dir[1])
+                        # Checking if possible move is in bounds
+                        if movement[0] >= 1 and movement[0] < map_width and movement[1] >= 1 and movement[1] < map_height:
+                            directions.append(dir)
+
+                    print(directions)
+
+                    self.tiles[x][y].blocked = False
+                    self.tiles[x][y].block_sight = False
+
+        print("Map finished!")
+
+
+
+
 
     def create_room(self, room):
         for x in range(room.x1+1, room.x2):

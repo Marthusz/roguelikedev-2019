@@ -10,14 +10,14 @@ import warnings
 warnings.filterwarnings("default", category=DeprecationWarning)
 
 def main():
-    screen_width = 80
-    screen_height = 50
-    map_width = 80
-    map_height = 45
+    screen_width = 100
+    screen_height = 60
+    map_width = screen_width - 15
+    map_height = screen_height - 15
 
-    room_max_size = 10
-    room_min_size = 6
-    max_rooms = 30
+    room_max_size = 17
+    room_min_size = 5
+    max_rooms = 100
 
     colors = {
         'dark_wall': libtcod.Color(0, 0, 100),

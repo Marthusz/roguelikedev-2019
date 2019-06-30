@@ -45,7 +45,7 @@ class GameMap:
                 if new_room.intersect(other_room):
                     break
             else:
-                self.create_room(new_room)
+                self.create_room(new_room, num_rooms)
 
                 (new_x, new_y) = new_room.center()
 
@@ -89,21 +89,78 @@ class GameMap:
                             choice = sample(directions, 1)[0]
                             self.tiles[cell[0]+choice[0]][cell[1]+choice[1]].blocked = False
                             self.tiles[cell[0]+choice[0]][cell[1]+choice[1]].block_sight = False
+                            self.tiles[cell[0]+choice[0]][cell[1]+choice[1]].region = num_rooms
                             self.tiles[cell[0]+choice[0]*2][cell[1]+choice[1]*2].blocked = False
                             self.tiles[cell[0]+choice[0]*2][cell[1]+choice[1]*2].block_sight = False
+                            self.tiles[cell[0]+choice[0]*2][cell[1]+choice[1]*2].region = num_rooms
                             cells.append((cell[0]+choice[0]*2, cell[1]+choice[1]*2))
                         else:
                             cells = cells[1:len(cells)]
 
+                    num_rooms += 1
 
-        print("Map finished!")
-        print('Number of rooms: {0}'.format(len(rooms)))
+        print('Connecting rooms...')
+        connectors = []
 
-    def create_room(self, room):
+        for y in range(2, map_height-1):
+            for x in range(2, map_width-1):
+                if self.tiles[x][y].block_sight:
+                    r1 = self.tiles[x-1][y].region
+                    r2 = self.tiles[x+1][y].region
+                    r3 = self.tiles[x][y-1].region
+                    r4 = self.tiles[x][y+1].region
+                    if (r1 != r2 and r1 != -1 and r2 != -1):
+                        connectors.append(((x, y), 0))
+                    elif(r3 != r4 and r3 != -1 and r4 != -1):
+                        connectors.append(((x, y), 1))
+
+        print(len(connectors))
+        while len(connectors) != 0:
+            shuffle(connectors)
+            connection = connectors[0]
+
+            if connection[1] == 0:
+                move = (1, 0)
+            else:
+                move = (0, 1)
+
+            reg1 = self.tiles[connection[0][0]-move[0]][connection[0][1]-move[1]].region
+            reg2 = self.tiles[connection[0][0]+move[0]][connection[0][1]+move[1]].region
+
+            print('reg1: {0}, reg2: {1}'.format(reg1, reg2))
+
+            self.tiles[connection[0][0]][connection[0][1]].blocked = False
+            self.tiles[connection[0][0]][connection[0][1]].block_sight = False
+            self.tiles[connection[0][0]][connection[0][1]].region = reg1
+
+            for y in range(0, map_height):
+                for x in range(0, map_width):
+                    if self.tiles[x][y].region == reg1:
+                        self.tiles[x][y].region = reg2
+
+            connectors = []
+
+            for y in range(2, map_height-1):
+                for x in range(2, map_width-1):
+                    if self.tiles[x][y].block_sight:
+                        r1 = self.tiles[x-1][y].region
+                        r2 = self.tiles[x+1][y].region
+                        r3 = self.tiles[x][y-1].region
+                        r4 = self.tiles[x][y+1].region
+                        if (r1 != r2 and r1 != -1 and r2 != -1):
+                            connectors.append(((x, y), 0))
+                        elif(r3 != r4 and r3 != -1 and r4 != -1):
+                            connectors.append(((x, y), 1))
+
+
+        print('Map finished!')
+
+    def create_room(self, room, region):
         for x in range(room.x1, room.x2):
             for y in range(room.y1, room.y2):
                 self.tiles[x][y].blocked = False
                 self.tiles[x][y].block_sight = False
+                self.tiles[x][y].region = region
 
     def create_h_tunnel(self, x1, x2, y):
         for x in range(min(x1, x2), max(x1, x2)+1):

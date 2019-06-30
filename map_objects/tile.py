@@ -1,5 +1,6 @@
 class Tile:
     def __init__(self, blocked, block_sight=None):
+        self.region = -1
         self.blocked = blocked
 
         if block_sight is None:

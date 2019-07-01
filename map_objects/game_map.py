@@ -132,24 +132,44 @@ class GameMap:
             self.tiles[connection[0][0]][connection[0][1]].block_sight = False
             self.tiles[connection[0][0]][connection[0][1]].region = reg1
 
+            for con in connectors:
+                r1 = self.tiles[con[0][0]-1][con[0][1]].region
+                r2 = self.tiles[con[0][0]+1][con[0][1]].region
+                r3 = self.tiles[con[0][0]][con[0][1]-1].region
+                r4 = self.tiles[con[0][0]][con[0][1]+1].region
+
+                if r2 == reg2 or r4 == reg2:
+                    if randint(0, 100) < 30:
+                        connectors.remove(con)
+
             for y in range(0, map_height):
                 for x in range(0, map_width):
                     if self.tiles[x][y].region == reg1:
                         self.tiles[x][y].region = reg2
 
-            connectors = []
+        print('Removing dead ends...')
 
-            for y in range(2, map_height-1):
-                for x in range(2, map_width-1):
-                    if self.tiles[x][y].block_sight:
-                        r1 = self.tiles[x-1][y].region
-                        r2 = self.tiles[x+1][y].region
-                        r3 = self.tiles[x][y-1].region
-                        r4 = self.tiles[x][y+1].region
-                        if (r1 != r2 and r1 != -1 and r2 != -1):
-                            connectors.append(((x, y), 0))
-                        elif(r3 != r4 and r3 != -1 and r4 != -1):
-                            connectors.append(((x, y), 1))
+        done = False
+        while not done:
+            done = True
+
+            for y in range(1, map_height-1):
+                for x in range(1, map_width-1):
+                    if not self.tiles[x][y].block_sight:
+                        exits = 0
+                        if not self.tiles[x-1][y].block_sight:
+                            exits += 1
+                        if not self.tiles[x+1][y].block_sight:
+                            exits += 1
+                        if not self.tiles[x][y-1].block_sight:
+                            exits += 1
+                        if not self.tiles[x][y+1].block_sight:
+                            exits += 1
+
+                        if exits <= 1:
+                            done = False
+                            self.tiles[x][y].blocked = True
+                            self.tiles[x][y].block_sight = True
 
 
 

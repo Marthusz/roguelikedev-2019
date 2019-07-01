@@ -6,6 +6,7 @@ from input_handlers import handle_keys
 from map_objects.game_map import GameMap
 from render_functions import clear_all, render_all
 from random import shuffle
+from time import time
 
 import warnings
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -34,7 +35,10 @@ def main():
     con = libtcod.console.Console(screen_width, screen_height, order='F')
 
     game_map = GameMap(map_width, map_height)
+    start = time()
     game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player)
+    end = time()
+    print('Time elapsed: {0}s'.format(end-start))
 
     while True:
         render_all(con, root_console, entities, game_map, screen_width, screen_height, colors)
@@ -54,7 +58,10 @@ def main():
                 map = action.get('map')
 
                 if map:
+                    start = time()
                     game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player)
+                    end = time()
+                    print('Time elapsed: {0}s'.format(end-start))
 
                 if move:
                     dx, dy = move

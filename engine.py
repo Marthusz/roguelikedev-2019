@@ -13,10 +13,10 @@ import warnings
 warnings.filterwarnings("default", category=DeprecationWarning)
 
 def main():
-    screen_width = 100
-    screen_height = 60
-    map_width = screen_width - 15
-    map_height = screen_height - 15
+    screen_width = 61
+    screen_height = 40
+    map_width = screen_width
+    map_height = screen_height - 3
 
     room_max_size = 13
     room_min_size = 5
@@ -27,16 +27,16 @@ def main():
     fov_radius = 10
 
     colors = {
-        'dark_wall': libtcod.Color(0, 0, 100),
-        'dark_ground': libtcod.Color(50, 50, 150),
-        'light_wall': libtcod.Color(130, 110, 50),
-        'light_ground': libtcod.Color(200, 180, 50)
+        'dark_wall': libtcod.Color(0, 0, 50),
+        'dark_ground': libtcod.Color(25, 25, 50),
+        'light_wall': libtcod.Color(100, 100, 50),
+        'light_ground': libtcod.Color(200, 200, 200)
     }
 
-    player = Entity(int(screen_width/2), int(screen_height/2), '@', libtcod.white)
+    player = Entity(int(screen_width/2), int(screen_height/2), '\u263A', libtcod.black)
     entities = [player]
 
-    libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
+    libtcod.console_set_custom_font('Aesomatica_16x16.png', libtcod.FONT_LAYOUT_CP437)
 
     root_console = libtcod.console_init_root(screen_width, screen_height, 'libtcod tutorial revised', False, renderer=libtcod.RENDERER_OPENGL2, vsync=True, order='F')
     con = libtcod.console.Console(screen_width, screen_height, order='F')

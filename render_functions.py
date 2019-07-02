@@ -10,15 +10,21 @@ def render_all(src_con, dst_con,entities, game_map, fov_map, fov_recompute, scre
                 if visible:
                     if wall:
                         src_con.tiles['bg'][x, y, :3] = colors.get('light_wall')
+                        src_con.tiles['ch'][x, y] = ord('#')
                     else:
                         src_con.tiles['bg'][x, y, :3] = colors.get('light_ground')
+                        src_con.tiles['ch'][x, y] = ord('+')
 
+                    src_con.tiles['fg'][x, y, :3] = libtcod.white
                     game_map.tiles[x][y].explored = True
                 elif game_map.tiles[x][y].explored:
                     if wall:
                         src_con.tiles['bg'][x, y, :3] = colors.get('dark_wall')
+                        src_con.tiles['ch'][x, y] = ord('#')
                     else:
                         src_con.tiles['bg'][x, y, :3] = colors.get('dark_ground')
+                        src_con.tiles['ch'][x, y] = ord('+')
+                    src_con.tiles['fg'][x, y, :3] = libtcod.gray
 
     for entity in entities:
         draw_entity(src_con, entity, fov_map)

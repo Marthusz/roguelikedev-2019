@@ -1,4 +1,4 @@
-from enum import enum
+from enum import Enum
 
 class GameStates(Enum):
     PLAYER_TURN = 1

@@ -3,6 +3,7 @@ import tcod.event as event
 
 from entity import Entity, get_blocking_entities_at_location
 from fov_functions import initialize_fov, recompute_fov
+from game_states import GameStates
 from input_handlers import handle_keys
 from map_objects.game_map import GameMap
 from render_functions import clear_all, render_all
@@ -52,6 +53,8 @@ def main():
     fov_recompute = True
     fov_map = initialize_fov(game_map)
 
+    game_state = GameStates.PLAYER_TURN
+
     while True:
         if fov_recompute:
             recompute_fov(fov_map, player.x, player.y, fov_radius, fov_light_walls, fov_algorithm)
@@ -75,7 +78,7 @@ def main():
                 map = action.get('map')
 
 
-                if move:
+                if move and game_state == GameStates.PLAYER_TURN:
                     dx, dy = move
                     destination_x = player.x + dx
                     destination_y = player.y + dy
@@ -88,6 +91,8 @@ def main():
                         else:
                             player.move(dx, dy)
                             fov_recompute = True
+
+                        game_state = GameStates.ENEMY_TURN
 
                 if map:
                     start = time()
@@ -103,6 +108,12 @@ def main():
 
                 if fullscreen:
                     libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
+
+                if game_state == GameStates.ENEMY_TURN:
+                    for entity in entities[1:]:
+                        print('The {0} ponders the meaning of its existance.'.format(entity.name))
+
+                    game_state = GameStates.PLAYER_TURN
 
 
 if __name__ == '__main__':

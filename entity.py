@@ -44,7 +44,8 @@ class Entity:
 
         for entity in entities:
             if entity.blocks and entity != self and entity != target:
-                libtcod.map_set_properties(fov, entity.x, entity.y, True, False)
+                fov.transparent[entity.y, entity.x] = True
+                fov.walkable[entity.y, entity.x] = False
 
         my_path = libtcod.path_new_using_map(fov, 1.41)
 

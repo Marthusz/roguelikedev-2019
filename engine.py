@@ -9,7 +9,6 @@ from input_handlers import handle_keys
 from map_objects.game_map import GameMap
 from render_functions import clear_all, render_all
 from random import shuffle
-from time import time
 
 import warnings
 warnings.filterwarnings("default", category=DeprecationWarning)
@@ -37,8 +36,8 @@ def main():
         'light_ground': libtcod.Color(200, 200, 200)
     }
 
-    fighter_component = Fighter(hp=30, defence=2, power=5)
-    player = Entity(0, 0, '\u263A', libtcod.black, 'Player', blocks=True, fighter=fighter_component)
+    fighter_component = Fighter(hp=30, defense=2, power=5)
+    player = Entity(0, 0, '\u263A', libtcod.black, 'player', blocks=True, fighter=fighter_component)
     entities = [player]
 
     libtcod.console_set_custom_font('Aesomatica_16x16.png', libtcod.FONT_LAYOUT_CP437)
@@ -47,10 +46,7 @@ def main():
     con = libtcod.console.Console(screen_width, screen_height, order='F')
 
     game_map = GameMap(map_width, map_height)
-    start = time()
     game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, max_monsters_per_room)
-    end = time()
-    print('Time elapsed: {0}s'.format(end-start))
 
     fov_recompute = True
     fov_map = initialize_fov(game_map)
@@ -77,7 +73,8 @@ def main():
                 move = action.get('move')
                 fullscreen = action.get('fullscreen')
                 exit = action.get('exit')
-                map = action.get('map')
+
+                player_turn_results = []
 
 
                 if move and game_state == GameStates.PLAYER_TURN:
@@ -89,21 +86,12 @@ def main():
                         target = get_blocking_entities_at_location(entities, destination_x, destination_y)
 
                         if target:
-                            print('You kick the {0} in the shins, much to its annoyance!'.format(target.name))
+                            player_turn_results.extend(player.fighter.attack(target))
                         else:
                             player.move(dx, dy)
                             fov_recompute = True
 
                         game_state = GameStates.ENEMY_TURN
-
-                if map:
-                    start = time()
-                    game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player)
-                    end = time()
-                    print('Time elapsed: {0}s'.format(end-start))
-                    fov_recompute = True
-                    fov_map = initialize_fov(game_map)
-                    con.clear()
 
                 if exit:
                     raise SystemExit()
@@ -111,12 +99,32 @@ def main():
                 if fullscreen:
                     libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
 
+                for player_turn_result in player_turn_results:
+                    message = player_turn_result.get('message')
+                    dead_entity = player_turn_result.get('dead')
+
+                    if message:
+                        print(message)
+
+                    if dead_entity:
+                        pass
+
                 if game_state == GameStates.ENEMY_TURN:
                     for entity in entities[1:]:
                         if entity.ai:
-                            entity.ai.take_turn(player, fov_map, game_map, entities)
+                            enemy_turn_results = entity.ai.take_turn(player, fov_map, game_map, entities)
 
-                    game_state = GameStates.PLAYER_TURN
+                            for enemy_turn_result in enemy_turn_results:
+                                message = enemy_turn_result.get('message')
+                                dead_entity = enemy_turn_result.get('dead')
+
+                                if message:
+                                    print(message)
+
+                                if dead_entity:
+                                    pass
+                    else:
+                        game_state = GameStates.PLAYER_TURN
 
 
 if __name__ == '__main__':

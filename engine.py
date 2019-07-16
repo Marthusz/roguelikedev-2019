@@ -1,6 +1,7 @@
 import tcod as libtcod
 import tcod.event as event
 
+from components.fighter import Fighter
 from entity import Entity, get_blocking_entities_at_location
 from fov_functions import initialize_fov, recompute_fov
 from game_states import GameStates
@@ -36,7 +37,8 @@ def main():
         'light_ground': libtcod.Color(200, 200, 200)
     }
 
-    player = Entity(0, 0, '\u263A', libtcod.black, 'Player', blocks=True)
+    fighter_component = Fighter(hp=30, defence=2, power=5)
+    player = Entity(0, 0, '\u263A', libtcod.black, 'Player', blocks=True, fighter=fighter_component)
     entities = [player]
 
     libtcod.console_set_custom_font('Aesomatica_16x16.png', libtcod.FONT_LAYOUT_CP437)
@@ -111,7 +113,8 @@ def main():
 
                 if game_state == GameStates.ENEMY_TURN:
                     for entity in entities[1:]:
-                        print('The {0} ponders the meaning of its existance.'.format(entity.name))
+                        if entity.ai:
+                            entity.ai.take_turn(player, fov_map, game_map, entities)
 
                     game_state = GameStates.PLAYER_TURN
 

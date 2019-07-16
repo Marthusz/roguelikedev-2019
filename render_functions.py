@@ -4,7 +4,7 @@ def render_all(src_con, dst_con,entities, game_map, fov_map, fov_recompute, scre
     if fov_recompute:
         for y in range(game_map.height):
             for x in range(game_map.width):
-                visible = libtcod.map_is_in_fov(fov_map, x, y)
+                visible = fov_map.fov[y, x]
                 wall = game_map.tiles[x][y].block_sight
 
                 if visible:
@@ -36,7 +36,7 @@ def clear_all(con, entities):
         clear_entity(con, entity)
 
 def draw_entity(con, entity, fov_map):
-    if libtcod.map_is_in_fov(fov_map, entity.x, entity.y):
+    if fov_map.fov[entity.y, entity.x]:
         con.tiles['fg'][entity.x, entity.y, :3] = entity.color
         # Index this array with console.ch[i, j]  # order='C' or console.ch[x, y]  # order='F'.
         con.tiles['ch'][entity.x, entity.y] = ord(entity.char)

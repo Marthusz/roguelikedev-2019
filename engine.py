@@ -26,6 +26,8 @@ def main():
     fov_light_walls = True
     fov_radius = 10
 
+    max_monsters_per_room = 3
+
     colors = {
         'dark_wall': libtcod.Color(0, 0, 50),
         'dark_ground': libtcod.Color(25, 25, 50),
@@ -33,7 +35,7 @@ def main():
         'light_ground': libtcod.Color(200, 200, 200)
     }
 
-    player = Entity(int(screen_width/2), int(screen_height/2), '\u263A', libtcod.black)
+    player = Entity(0, 0, '\u263A', libtcod.black, 'Player', blocks=True)
     entities = [player]
 
     libtcod.console_set_custom_font('Aesomatica_16x16.png', libtcod.FONT_LAYOUT_CP437)
@@ -43,7 +45,7 @@ def main():
 
     game_map = GameMap(map_width, map_height)
     start = time()
-    game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player)
+    game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, max_monsters_per_room)
     end = time()
     print('Time elapsed: {0}s'.format(end-start))
 

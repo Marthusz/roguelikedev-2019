@@ -1,3 +1,5 @@
+import tcod as libtcod
+
 import math
 
 class Entity:
@@ -31,6 +33,33 @@ class Entity:
 
         if not (game_map.is_blocked(self.x+dx, self.y+dy) or get_blocking_entities_at_location(entities, self.x+dx, self.y+dy)):
             self.move(dx, dy)
+
+    def move_astar(self, target, entities, game_map):
+        fov = libtcod.map.Map(game_map.width, game_map.height)
+
+        for y1 in range(game_map.height):
+            for x1 in range(game_map.width):
+                fov.transparent[y1, x1] = not game_map.tiles[x1][y1].block_sight
+                fov.walkable[y1, x1] = not game_map.tiles[x1][y1].blocked
+
+        for entity in entities:
+            if entity.blocks and entity != self and entity != target:
+                libtcod.map_set_properties(fov, entity.x, entity.y, True, False)
+
+        my_path = libtcod.path_new_using_map(fov, 1.41)
+
+        libtcod.path_compute(my_path, self.x, self.y, target.x, target.y)
+
+        if not libtcod.path_is_empty(my_path) and libtcod.path_size(my_path) < 25:
+            x, y = libtcod.path_walk(my_path, True)
+            if x or y:
+                self.x = x
+                self.y = y
+        else:
+            self.move_towards(target.x, target.y, game_map, entities)
+
+        # DeprecationWarning: libtcod objects are deleted automatically.
+        # libtcod.path_delete(my_path)
 
     def distance_to(self, other):
         dx = self.x - other.x

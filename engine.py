@@ -8,7 +8,7 @@ from fov_functions import initialize_fov, recompute_fov
 from game_states import GameStates
 from input_handlers import handle_keys
 from map_objects.game_map import GameMap
-from render_functions import clear_all, render_all
+from render_functions import clear_all, render_all, RenderOrder
 from random import shuffle
 
 import warnings
@@ -38,10 +38,10 @@ def main():
     }
 
     fighter_component = Fighter(hp=30, defense=2, power=5)
-    player = Entity(0, 0, '\u263A', libtcod.black, 'player', blocks=True, fighter=fighter_component)
+    player = Entity(0, 0, '\u263A', libtcod.black, 'player', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component)
     entities = [player]
 
-    libtcod.console_set_custom_font('Aesomatica_16x16.png', libtcod.FONT_LAYOUT_CP437)
+    libtcod.console_set_custom_font('Markvii.png', libtcod.FONT_LAYOUT_CP437)
 
     root_console = libtcod.console_init_root(screen_width, screen_height, 'libtcod tutorial revised', False, renderer=libtcod.RENDERER_OPENGL2, vsync=True, order='F')
     con = libtcod.console.Console(screen_width, screen_height, order='F')
@@ -58,7 +58,7 @@ def main():
         if fov_recompute:
             recompute_fov(fov_map, player.x, player.y, fov_radius, fov_light_walls, fov_algorithm)
 
-        render_all(con, root_console, entities, game_map, fov_map, fov_recompute, screen_width, screen_height, colors)
+        render_all(con, root_console, entities, player, game_map, fov_map, fov_recompute, screen_width, screen_height, colors)
         fov_recompute = False
 
         libtcod.console_flush()
